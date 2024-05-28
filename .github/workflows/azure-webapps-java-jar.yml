@@ -39,23 +39,20 @@ jobs:
       run:
         working-directory: ./helloworld
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu' # See 'Supported distributions' for available options
+        java-version: '17'
+    - run: java HelloWorldApp.java
+    - name: Build with Maven
+      run: mvn clean install
 
-      - name: Set up Java version
-        uses: actions/setup-java@v3.0.0
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.DISTRIBUTION }}
-          cache: 'maven'
-
-      - name: Build with Maven
-        run: mvn clean install
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v3
+      with:
+        name: java-app
+        path: '${{ github.workspace }}/target/*.jar'
 
   deploy:
     permissions:
